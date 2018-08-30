@@ -23,15 +23,15 @@ static int zbx_module_glassfish_application_json(AGENT_REQUEST *request, AGENT_R
 static ZBX_METRIC keys[] =
 /* 			  KEY                          FLAG                   FUNCTION                   TEST PARAMETERS */
 {
-	{"glassfish.discovery.application",	CF_HAVEPARAMS, zbx_module_glassfish_discovery_application,	NULL},
-	{"glassfish.discovery.pool",		CF_HAVEPARAMS, zbx_module_glassfish_discovery_pool,			NULL},
-	{"glassfish.ping.connection.pool",	CF_HAVEPARAMS, zbx_module_glassfish_ping_connection_pool,	NULL},
-    {"glassfish.resource",   			CF_HAVEPARAMS, zbx_module_glassfish_resource,  				NULL},
-	{"glassfish.resource.json",   		CF_HAVEPARAMS, zbx_module_glassfish_resource_json,  		NULL},
-    {"glassfish.http.service",   		CF_HAVEPARAMS, zbx_module_glassfish_http_service,  			NULL},
-	{"glassfish.http.service.json",		CF_HAVEPARAMS, zbx_module_glassfish_http_service_json,		NULL},
-	{"glassfish.application",   		CF_HAVEPARAMS, zbx_module_glassfish_application,  			NULL},
-	{"glassfish.application.json",  	CF_HAVEPARAMS, zbx_module_glassfish_application_json,  		NULL},
+    {"glassfish.discovery.application",	CF_HAVEPARAMS, zbx_module_glassfish_discovery_application,	NULL},
+    {"glassfish.discovery.pool",	CF_HAVEPARAMS, zbx_module_glassfish_discovery_pool,		NULL},
+    {"glassfish.ping.connection.pool",	CF_HAVEPARAMS, zbx_module_glassfish_ping_connection_pool,	NULL},
+    {"glassfish.resource",   		CF_HAVEPARAMS, zbx_module_glassfish_resource,  			NULL},
+    {"glassfish.resource.json",   	CF_HAVEPARAMS, zbx_module_glassfish_resource_json,  		NULL},
+    {"glassfish.http.service",   	CF_HAVEPARAMS, zbx_module_glassfish_http_service,  		NULL},
+    {"glassfish.http.service.json",	CF_HAVEPARAMS, zbx_module_glassfish_http_service_json,		NULL},
+    {"glassfish.application",   	CF_HAVEPARAMS, zbx_module_glassfish_application,  		NULL},
+    {"glassfish.application.json",  	CF_HAVEPARAMS, zbx_module_glassfish_application_json,  		NULL},
     {NULL}
 };
 
@@ -48,7 +48,7 @@ static ZBX_METRIC keys[] =
 ******************************************************************************/
 int zbx_module_api_version(void)	
 {
-	return ZBX_MODULE_API_VERSION;
+    return ZBX_MODULE_API_VERSION;
 }
 	
 /******************************************************************************
@@ -66,13 +66,13 @@ int zbx_module_api_version(void)
 ******************************************************************************/
 int zbx_module_init(void)
 {
-	srand(time(NULL));
+    srand(time(NULL));
 	
-	zabbix_log(LOG_LEVEL_INFORMATION, 
-			   "Module: %s - openssl: '%s', libcurl: %s, regex: %s (%s:%d)", 
-			   MODULE_NAME, OPENSSL_VERSION_TEXT, "", "" , __FILE__, __LINE__ );
+    zabbix_log(LOG_LEVEL_INFORMATION, 
+	       "Module: %s - openssl: '%s', libcurl: %s, regex: %s (%s:%d)", 
+	       MODULE_NAME, OPENSSL_VERSION_TEXT, "", "" , __FILE__, __LINE__ );
 	
-	return ZBX_MODULE_OK;
+    return ZBX_MODULE_OK;
 }
 	
 /******************************************************************************
@@ -88,7 +88,7 @@ int zbx_module_init(void)
 ******************************************************************************/
 int zbx_module_uninit(void)
 {
-	return ZBX_MODULE_OK;
+    return ZBX_MODULE_OK;
 }
 	
 /******************************************************************************
@@ -102,21 +102,21 @@ int zbx_module_uninit(void)
 ******************************************************************************/
 ZBX_METRIC *zbx_module_item_list()
 {
-	return keys;
+    return keys;
 }
 
 /*
 */
 static int zbx_module_glassfish_discovery_application(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	return SYSINFO_RET_OK;
+    return SYSINFO_RET_OK;
 }
 
 /*
 */
 static int zbx_module_glassfish_discovery_pool(AGENT_REQUEST *request, AGENT_RESULT *result)
 {			   
-	return SYSINFO_RET_OK;
+    return SYSINFO_RET_OK;
 }
 
 /*
@@ -124,63 +124,63 @@ glassfish.ping.connection.pool["https://{HOST.CONN}", 8888, "pool", "exit_code.:
 */
 static int zbx_module_glassfish_ping_connection_pool(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	char *data;
-	const char *dataRes;
-	int res;
-	int value;
+    char *data;
+    const char *dataRes;
+    int res;
+    int value;
 	
-	zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - param num: %d (%s:%d)", MODULE_NAME, request->nparam, __FILE__, __LINE__ );
+    zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - param num: %d (%s:%d)", MODULE_NAME, request->nparam, __FILE__, __LINE__ );
 	
-	if (6 != request->nparam)
-	{
-		SET_MSG_RESULT(result, strdup("Invalid number of parameters"));
-		zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - invalid number of parameters (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
-		return SYSINFO_RET_FAIL;
-	}
-	
-    res = curl_init();
-	
-	if (res != CURLE_OK)
+    if (6 != request->nparam)
     {
-		SET_MSG_RESULT(result, strdup("Error initilization libcurl"));
-		zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - could not initilization libcurl (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
-		return SYSINFO_RET_FAIL;
+        SET_MSG_RESULT(result, strdup("Invalid number of parameters"));
+	zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - invalid number of parameters (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
+	return SYSINFO_RET_FAIL;
     }
 	
-	char *host = get_rparam(request, 0);
-	char *port = get_rparam(request, 1);
-	char *namePool = get_rparam(request, 2);
-	char *regex = get_rparam(request, 3);
-	char *user = get_rparam(request, 4);
-	char *password = get_rparam(request, 5);
+    res = curl_init();
+    
+    if (res != CURLE_OK)
+    {
+	SET_MSG_RESULT(result, strdup("Error initilization libcurl"));
+	zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - could not initilization libcurl (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
+	return SYSINFO_RET_FAIL;
+    }
 	
-	char fullURL[URL_LENGTH];
-	zbx_snprintf(fullURL, URL_LENGTH, "%s:%s/%s/?appname=&id=%s&modulename=&targetName=&__remove_empty_entries__=true", host, port, GLASSFISH_PING_CONNECTION_POOL, namePool);
+    char *host = get_rparam(request, 0);
+    char *port = get_rparam(request, 1);
+    char *namePool = get_rparam(request, 2);
+    char *regex = get_rparam(request, 3);
+    char *user = get_rparam(request, 4);
+    char *password = get_rparam(request, 5);
 	
-	curl_set_opt(fullURL, user, password);
+    char fullURL[URL_LENGTH];
+    zbx_snprintf(fullURL, URL_LENGTH, "%s:%s/%s/?appname=&id=%s&modulename=&targetName=&__remove_empty_entries__=true", host, port, GLASSFISH_PING_CONNECTION_POOL, namePool);
 	
-	data = get_data();
-	zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - raw data: %s (%s:%d)", MODULE_NAME, data, __FILE__, __LINE__ );
+    curl_set_opt(fullURL, user, password);
 	
-	dataRes = parse_data(data, regex);
-	zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - parse data: %s (%s:%d)", MODULE_NAME, dataRes, __FILE__, __LINE__ );
+    data = get_data();
+    zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - raw data: %s (%s:%d)", MODULE_NAME, data, __FILE__, __LINE__ );
 	
-	zbx_free(data);
+    dataRes = parse_data(data, regex);
+    zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - parse data: %s (%s:%d)", MODULE_NAME, dataRes, __FILE__, __LINE__ );
 	
-	if (dataRes == NULL)
-	{
-		SET_MSG_RESULT(result, strdup("Result is empty"));
-		zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - result is empty (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
-		return SYSINFO_RET_FAIL;
-	}
+    zbx_free(data);
 	
-	if (strcmp(dataRes, "SUCCESS") == 0)
-		value = 1;
-	else
-		value = 0;
+    if (dataRes == NULL)
+    {
+        SET_MSG_RESULT(result, strdup("Result is empty"));
+	zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - result is empty (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
+	return SYSINFO_RET_FAIL;
+    }
 	
-	SET_UI64_RESULT(result, value);
-	return SYSINFO_RET_OK;
+    if (strcmp(dataRes, "SUCCESS") == 0)
+        value = 1;
+    else
+	value = 0;
+	
+    SET_UI64_RESULT(result, value);
+    return SYSINFO_RET_OK;
 }
 
 /*
@@ -188,61 +188,61 @@ glassfish.resource["https://{HOST.CONN}", 8888, "resource", "averageconnwaittime
 */
 static int zbx_module_glassfish_resource(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	char *data;
-	const char *dataRes;
-	int res;
-	int value;
+    char *data;
+    const char *dataRes;
+    int res;
+    int value;
 	
-	zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - param num: %d (%s:%d)", MODULE_NAME, request->nparam, __FILE__, __LINE__ );
+    zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - param num: %d (%s:%d)", MODULE_NAME, request->nparam, __FILE__, __LINE__ );
 	
-	if (7 != request->nparam)
-	{
-		SET_MSG_RESULT(result, strdup("Invalid number of parameters"));
-		zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - invalid number of parameters (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
-		return SYSINFO_RET_FAIL;
-	}
+    if (7 != request->nparam)
+    {
+        SET_MSG_RESULT(result, strdup("Invalid number of parameters"));
+	zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - invalid number of parameters (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
+	return SYSINFO_RET_FAIL;
+    }
 	
     res = curl_init();
 	
-	if (res != CURLE_OK)
+    if (res != CURLE_OK)
     {
-		SET_MSG_RESULT(result, strdup("Error initilization libcurl"));
-		zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - could not initilization libcurl (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
-		return SYSINFO_RET_FAIL;
+	SET_MSG_RESULT(result, strdup("Error initilization libcurl"));
+	zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - could not initilization libcurl (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
+	return SYSINFO_RET_FAIL;
     }
 	
-	char *host = get_rparam(request, 0);
-	char *port = get_rparam(request, 1);
-	char *nameResource = get_rparam(request, 2);
-	char *resourceKey = get_rparam(request, 3);
-	char *regex = get_rparam(request, 4);
-	char *user = get_rparam(request, 5);
-	char *password = get_rparam(request, 6);
+    char *host = get_rparam(request, 0);
+    char *port = get_rparam(request, 1);
+    char *nameResource = get_rparam(request, 2);
+    char *resourceKey = get_rparam(request, 3);
+    char *regex = get_rparam(request, 4);
+    char *user = get_rparam(request, 5);
+    char *password = get_rparam(request, 6);
 	
-	char fullURL[URL_LENGTH];
-	zbx_snprintf(fullURL, URL_LENGTH, "%s:%s/%s/%s/%s", host, port, GLASSFISH_RESOURCE, nameResource, resourceKey);
+    char fullURL[URL_LENGTH];
+    zbx_snprintf(fullURL, URL_LENGTH, "%s:%s/%s/%s/%s", host, port, GLASSFISH_RESOURCE, nameResource, resourceKey);
 	
-	curl_set_opt(fullURL, user, password);
+    curl_set_opt(fullURL, user, password);
 	
-	data = get_data();
-	zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - raw data: %s (%s:%d)", MODULE_NAME, data, __FILE__, __LINE__ );
+    data = get_data();
+    zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - raw data: %s (%s:%d)", MODULE_NAME, data, __FILE__, __LINE__ );
 	
-	dataRes = parse_data(data, regex);
-	zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - parse data: %s (%s:%d)", MODULE_NAME, dataRes, __FILE__, __LINE__ );
+    dataRes = parse_data(data, regex);
+    zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - parse data: %s (%s:%d)", MODULE_NAME, dataRes, __FILE__, __LINE__ );
 	
-	zbx_free(data);
+    zbx_free(data);
 	
-	if (dataRes == NULL)
-	{
-		SET_MSG_RESULT(result, strdup("Result is empty"));
-		zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - result is empty (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
-		return SYSINFO_RET_FAIL;
-	}
+    if (dataRes == NULL)
+    {
+        SET_MSG_RESULT(result, strdup("Result is empty"));
+	zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - result is empty (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
+	return SYSINFO_RET_FAIL;
+    }
 	
-	value = atoi(dataRes);
+    value = atoi(dataRes);
 	
-	SET_UI64_RESULT(result, value);
-	return SYSINFO_RET_OK;
+    SET_UI64_RESULT(result, value);
+    return SYSINFO_RET_OK;
 }
 
 /*
@@ -250,47 +250,47 @@ glassfish.resource.json["https://{HOST.CONN}", 8888, "resource", "averageconnwai
 */
 static int zbx_module_glassfish_resource_json(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	char *data;
-	int res;
+    char *data;
+    int res;
 	
-	zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - param num: %d (%s:%d)", MODULE_NAME, request->nparam, __FILE__, __LINE__ );
+    zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - param num: %d (%s:%d)", MODULE_NAME, request->nparam, __FILE__, __LINE__ );
 	
-	if (6 != request->nparam)
-	{
-		SET_MSG_RESULT(result, strdup("Invalid number of parameters"));
-		zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - invalid number of parameters (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
-		return SYSINFO_RET_FAIL;
-	}
+    if (6 != request->nparam)
+    {
+        SET_MSG_RESULT(result, strdup("Invalid number of parameters"));
+	zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - invalid number of parameters (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
+        return SYSINFO_RET_FAIL;
+    }
 	
     res = curl_init();
 	
-	if (res != CURLE_OK)
+    if (res != CURLE_OK)
     {
-		SET_MSG_RESULT(result, strdup("Error initilization libcurl"));
-		zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - could not initilization libcurl (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
-		return SYSINFO_RET_FAIL;
+	SET_MSG_RESULT(result, strdup("Error initilization libcurl"));
+	zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - could not initilization libcurl (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
+	return SYSINFO_RET_FAIL;
     }
 	
-	char *host = get_rparam(request, 0);
-	char *port = get_rparam(request, 1);
-	char *nameResource = get_rparam(request, 2);
-	char *resourceKey = get_rparam(request, 3);
-	char *user = get_rparam(request, 4);
-	char *password = get_rparam(request, 5);
+    char *host = get_rparam(request, 0);
+    char *port = get_rparam(request, 1);
+    char *nameResource = get_rparam(request, 2);
+    char *resourceKey = get_rparam(request, 3);
+    char *user = get_rparam(request, 4);
+    char *password = get_rparam(request, 5);
 	
-	char fullURL[URL_LENGTH];
-	zbx_snprintf(fullURL, URL_LENGTH, "%s:%s/%s/%s/%s", host, port, GLASSFISH_RESOURCE, nameResource, resourceKey);
+    char fullURL[URL_LENGTH];
+    zbx_snprintf(fullURL, URL_LENGTH, "%s:%s/%s/%s/%s", host, port, GLASSFISH_RESOURCE, nameResource, resourceKey);
 	
-	curl_set_opt(fullURL, user, password);
+    curl_set_opt(fullURL, user, password);
 	
-	data = get_data();
-	zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - raw data: %s (%s:%d)", MODULE_NAME, data, __FILE__, __LINE__ );
+    data = get_data();
+    zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - raw data: %s (%s:%d)", MODULE_NAME, data, __FILE__, __LINE__ );
 	
-	SET_STR_RESULT(result, strdup(data));
+    SET_STR_RESULT(result, strdup(data));
 	
-	zbx_free(data);
+    zbx_free(data);
 	
-	return SYSINFO_RET_OK;
+    return SYSINFO_RET_OK;
 }
 
 /*
@@ -299,59 +299,59 @@ glassfish.http.service["https://{HOST.CONN}", 8888, "count200", "count.:(\d+),",
 static int zbx_module_glassfish_http_service(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
     char *data;
-	const char *dataRes;
-	int res;
-	int value;
+    const char *dataRes;
+    int res;
+    int value;
 	
-	zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - param num: %d (%s:%d)", MODULE_NAME, request->nparam, __FILE__, __LINE__ );
+    zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - param num: %d (%s:%d)", MODULE_NAME, request->nparam, __FILE__, __LINE__ );
 	
-	if (6 != request->nparam)
-	{
-		SET_MSG_RESULT(result, strdup("Invalid number of parameters"));
-		zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - invalid number of parameters (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
-		return SYSINFO_RET_FAIL;
-	}
+    if (6 != request->nparam)
+    {
+        SET_MSG_RESULT(result, strdup("Invalid number of parameters"));
+	zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - invalid number of parameters (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
+	return SYSINFO_RET_FAIL;
+    }
 	
     res = curl_init();
 	
-	if (res != CURLE_OK)
+    if (res != CURLE_OK)
     {
-		SET_MSG_RESULT(result, strdup("Error initilization libcurl"));
-		zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - could not initilization libcurl (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
-		return SYSINFO_RET_FAIL;
+	SET_MSG_RESULT(result, strdup("Error initilization libcurl"));
+	zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - could not initilization libcurl (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
+	return SYSINFO_RET_FAIL;
     }
 	
-	char *host = get_rparam(request, 0);
-	char *port = get_rparam(request, 1);
-	char *requestKey = get_rparam(request, 2);
-	char *regex = get_rparam(request, 3);
-	char *user = get_rparam(request, 4);
-	char *password = get_rparam(request, 5);
+    char *host = get_rparam(request, 0);
+    char *port = get_rparam(request, 1);
+    char *requestKey = get_rparam(request, 2);
+    char *regex = get_rparam(request, 3);
+    char *user = get_rparam(request, 4);
+    char *password = get_rparam(request, 5);
 	
-	char fullURL[URL_LENGTH];
-	zbx_snprintf(fullURL, URL_LENGTH, "%s:%s/%s/%s", host, port, GLASSFISH_HTTP_SERVICE, requestKey);
+    char fullURL[URL_LENGTH];
+    zbx_snprintf(fullURL, URL_LENGTH, "%s:%s/%s/%s", host, port, GLASSFISH_HTTP_SERVICE, requestKey);
 	
-	curl_set_opt(fullURL, user, password);
+    curl_set_opt(fullURL, user, password);
 	
-	data = get_data();
-	zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - raw data: %s (%s:%d)", MODULE_NAME, data, __FILE__, __LINE__ );
+    data = get_data();
+    zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - raw data: %s (%s:%d)", MODULE_NAME, data, __FILE__, __LINE__ );
 	
-	dataRes = parse_data(data, regex);
-	zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - parse data: %s (%s:%d)", MODULE_NAME, dataRes, __FILE__, __LINE__ );
+    dataRes = parse_data(data, regex);
+    zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - parse data: %s (%s:%d)", MODULE_NAME, dataRes, __FILE__, __LINE__ );
 	
-	zbx_free(data);
+    zbx_free(data);
 	
-	if (dataRes == NULL)
-	{
-		SET_MSG_RESULT(result, strdup("Result is empty"));
-		zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - result is empty (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
-		return SYSINFO_RET_FAIL;
-	}
+    if (dataRes == NULL)
+    {
+        SET_MSG_RESULT(result, strdup("Result is empty"));
+	zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - result is empty (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
+	return SYSINFO_RET_FAIL;
+    }
 	
-	value = atoi(dataRes);
+    value = atoi(dataRes);
 	
-	SET_UI64_RESULT(result, value);
-	return SYSINFO_RET_OK;
+    SET_UI64_RESULT(result, value);
+    return SYSINFO_RET_OK;
 }
 
 /*
@@ -359,46 +359,46 @@ glassfish.http.service.json["https://{HOST.CONN}", 8888, "count200", "user", "pa
 */
 static int zbx_module_glassfish_http_service_json(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	char *data;
-	int res;
+    char *data;
+    int res;
 	
-	zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - param num: %d (%s:%d)", MODULE_NAME, request->nparam, __FILE__, __LINE__ );
+    zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - param num: %d (%s:%d)", MODULE_NAME, request->nparam, __FILE__, __LINE__ );
 	
-	if (5 != request->nparam)
-	{
-		SET_MSG_RESULT(result, strdup("Invalid number of parameters"));
-		zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - invalid number of parameters (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
-		return SYSINFO_RET_FAIL;
-	}
+    if (5 != request->nparam)
+    {
+        SET_MSG_RESULT(result, strdup("Invalid number of parameters"));
+	zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - invalid number of parameters (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
+	return SYSINFO_RET_FAIL;
+    }
 	
     res = curl_init();
 	
-	if (res != CURLE_OK)
+    if (res != CURLE_OK)
     {
-		SET_MSG_RESULT(result, strdup("Error initilization libcurl"));
-		zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - could not initilization libcurl (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
-		return SYSINFO_RET_FAIL;
+        SET_MSG_RESULT(result, strdup("Error initilization libcurl"));
+	zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - could not initilization libcurl (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
+	return SYSINFO_RET_FAIL;
     }
 	
-	char *host = get_rparam(request, 0);
-	char *port = get_rparam(request, 1);
-	char *requestKey = get_rparam(request, 2);
-	char *user = get_rparam(request, 3);
-	char *password = get_rparam(request, 4);
+    char *host = get_rparam(request, 0);
+    char *port = get_rparam(request, 1);
+    char *requestKey = get_rparam(request, 2);
+    char *user = get_rparam(request, 3);
+    char *password = get_rparam(request, 4);
 	
-	char fullURL[URL_LENGTH];
-	zbx_snprintf(fullURL, URL_LENGTH, "%s:%s/%s/%s", host, port, GLASSFISH_HTTP_SERVICE, requestKey);
+    char fullURL[URL_LENGTH];
+    zbx_snprintf(fullURL, URL_LENGTH, "%s:%s/%s/%s", host, port, GLASSFISH_HTTP_SERVICE, requestKey);
 	
-	curl_set_opt(fullURL, user, password);
+    curl_set_opt(fullURL, user, password);
 	
-	data = get_data();
-	zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - raw data: %s (%s:%d)", MODULE_NAME, data, __FILE__, __LINE__ );
+    data = get_data();
+    zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - raw data: %s (%s:%d)", MODULE_NAME, data, __FILE__, __LINE__ );
 	
-	SET_STR_RESULT(result, strdup(data));
+    SET_STR_RESULT(result, strdup(data));
 	
-	zbx_free(data);
+    zbx_free(data);
 	
-	return SYSINFO_RET_OK;
+    return SYSINFO_RET_OK;
 }
 
 /*
@@ -406,64 +406,64 @@ glassfish.application["https://{HOST.CONN}", 8888, "application", "activesession
 */
 static int zbx_module_glassfish_application(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	char *data;
-	const char *dataRes;
-	int res;
-	int value;
+    char *data;
+    const char *dataRes;
+    int res;
+    int value;
 	
-	zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - param num: %d (%s:%d)", MODULE_NAME, request->nparam, __FILE__, __LINE__ );
+    zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - param num: %d (%s:%d)", MODULE_NAME, request->nparam, __FILE__, __LINE__ );
 	
-	if (7 != request->nparam)
-	{
-		SET_MSG_RESULT(result, strdup("Invalid number of parameters"));
-		zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - invalid number of parameters (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
-		return SYSINFO_RET_FAIL;
-	}
+    if (7 != request->nparam)
+    {
+        SET_MSG_RESULT(result, strdup("Invalid number of parameters"));
+	zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - invalid number of parameters (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
+        return SYSINFO_RET_FAIL;
+    }
 	
     res = curl_init();
 	
-	if (res != CURLE_OK)
+    if (res != CURLE_OK)
     {
-		SET_MSG_RESULT(result, strdup("Error initilization libcurl"));
-		zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - could not initilization libcurl (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
-		return SYSINFO_RET_FAIL;
+	SET_MSG_RESULT(result, strdup("Error initilization libcurl"));
+	zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - could not initilization libcurl (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
+	return SYSINFO_RET_FAIL;
     }
 	
-	char *host = get_rparam(request, 0);
-	char *port = get_rparam(request, 1);
-	char *application = get_rparam(request, 2);
-	char *requestKey = get_rparam(request, 3);
-	char *regex = get_rparam(request, 4);
-	char *user = get_rparam(request, 5);
-	char *password = get_rparam(request, 6);
+    char *host = get_rparam(request, 0);
+    char *port = get_rparam(request, 1);
+    char *application = get_rparam(request, 2);
+    char *requestKey = get_rparam(request, 3);
+    char *regex = get_rparam(request, 4);
+    char *user = get_rparam(request, 5);
+    char *password = get_rparam(request, 6);
 	
-	char fullURL[URL_LENGTH];
-	zbx_snprintf(fullURL, URL_LENGTH, "%s:%s/%s/%s/server/%s", host, port, GLASSFISH_APPLICATION, application, requestKey);
+    char fullURL[URL_LENGTH];
+    zbx_snprintf(fullURL, URL_LENGTH, "%s:%s/%s/%s/server/%s", host, port, GLASSFISH_APPLICATION, application, requestKey);
 	
-	curl_set_opt(fullURL, user, password);
+    curl_set_opt(fullURL, user, password);
 	
-	data = get_data();
-	zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - raw data: %s (%s:%d)", MODULE_NAME, data, __FILE__, __LINE__ );
+    data = get_data();
+    zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - raw data: %s (%s:%d)", MODULE_NAME, data, __FILE__, __LINE__ );
 	
-	dataRes = parse_data(data, regex);
-	zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - parse data: %s (%s:%d)", MODULE_NAME, dataRes, __FILE__, __LINE__ );
+    dataRes = parse_data(data, regex);
+    zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - parse data: %s (%s:%d)", MODULE_NAME, dataRes, __FILE__, __LINE__ );
 	
-	zbx_free(data);
+    zbx_free(data);
 	
-	if (dataRes == NULL)
-	{
-		SET_MSG_RESULT(result, strdup("Result is empty"));
-		zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - result is empty (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
-		return SYSINFO_RET_FAIL;
-	}
+    if (dataRes == NULL)
+    {
+        SET_MSG_RESULT(result, strdup("Result is empty"));
+	zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - result is empty (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
+	return SYSINFO_RET_FAIL;
+    }
 	
-	value = atoi(dataRes);
+    value = atoi(dataRes);
 	
-	if (value < 0)
-		value = 0;
+    if (value < 0)
+        value = 0;
 	
-	SET_UI64_RESULT(result, value);
-	return SYSINFO_RET_OK;
+    SET_UI64_RESULT(result, value);
+    return SYSINFO_RET_OK;
 }
 
 /*
@@ -471,45 +471,45 @@ glassfish.application.json["https://{HOST.CONN}", 8888, "application", "activese
 */
 static int zbx_module_glassfish_application_json(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
-	char *data;
-	int res;
+    char *data;
+    int res;
 	
-	zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - param num: %d (%s:%d)", MODULE_NAME, request->nparam, __FILE__, __LINE__ );
+    zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - param num: %d (%s:%d)", MODULE_NAME, request->nparam, __FILE__, __LINE__ );
 	
-	if (6 != request->nparam)
-	{
-		SET_MSG_RESULT(result, strdup("Invalid number of parameters"));
-		zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - invalid number of parameters (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
-		return SYSINFO_RET_FAIL;
-	}
+    if (6 != request->nparam)
+    {
+        SET_MSG_RESULT(result, strdup("Invalid number of parameters"));
+	zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - invalid number of parameters (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
+	return SYSINFO_RET_FAIL;
+    }
 	
     res = curl_init();
 	
-	if (res != CURLE_OK)
+    if (res != CURLE_OK)
     {
-		SET_MSG_RESULT(result, strdup("Error initilization libcurl"));
-		zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - could not initilization libcurl (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
-		return SYSINFO_RET_FAIL;
+        SET_MSG_RESULT(result, strdup("Error initilization libcurl"));
+	zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - could not initilization libcurl (%s:%d)", MODULE_NAME, __FILE__, __LINE__ );
+	return SYSINFO_RET_FAIL;
     }
 	
-	char *host = get_rparam(request, 0);
-	char *port = get_rparam(request, 1);
-	char *application = get_rparam(request, 2);
-	char *requestKey = get_rparam(request, 3);
-	char *user = get_rparam(request, 4);
-	char *password = get_rparam(request, 5);
+     char *host = get_rparam(request, 0);
+     char *port = get_rparam(request, 1);
+     char *application = get_rparam(request, 2);
+     char *requestKey = get_rparam(request, 3);
+     char *user = get_rparam(request, 4);
+     char *password = get_rparam(request, 5);
 	
-	char fullURL[URL_LENGTH];
-	zbx_snprintf(fullURL, URL_LENGTH, "%s:%s/%s/%s/server/%s", host, port, GLASSFISH_APPLICATION, application, requestKey);
+     char fullURL[URL_LENGTH];
+     zbx_snprintf(fullURL, URL_LENGTH, "%s:%s/%s/%s/server/%s", host, port, GLASSFISH_APPLICATION, application, requestKey);
 	
-	curl_set_opt(fullURL, user, password);
+     curl_set_opt(fullURL, user, password);
 	
-	data = get_data();
-	zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - raw data: %s (%s:%d)", MODULE_NAME, data, __FILE__, __LINE__ );
+     data = get_data();
+     zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - raw data: %s (%s:%d)", MODULE_NAME, data, __FILE__, __LINE__ );
 	
-	SET_STR_RESULT(result, strdup(data));
+     SET_STR_RESULT(result, strdup(data));
 	
-	zbx_free(data);
+     zbx_free(data);
 	
-	return SYSINFO_RET_OK;
+     return SYSINFO_RET_OK;
 }
