@@ -31,7 +31,7 @@ static ZBX_METRIC keys[] =
     {"glassfish.http.service",          CF_HAVEPARAMS, zbx_module_glassfish_http_service,           NULL},
     {"glassfish.http.service.json",     CF_HAVEPARAMS, zbx_module_glassfish_http_service_json,      NULL},
     {"glassfish.application",           CF_HAVEPARAMS, zbx_module_glassfish_application,            NULL},
-    {"glassfish.application.json",      CF_HAVEPARAMS, zbx_module_glassfish_application_json,  		NULL},
+    {"glassfish.application.json",      CF_HAVEPARAMS, zbx_module_glassfish_application_json,       NULL},
     {NULL}
 };
 
