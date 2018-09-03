@@ -30,8 +30,9 @@ size_t write_data_callback(void *contents, size_t size, size_t nmemb, void *user
     if(mem->memory == NULL)
     {
         /* out of memory! */
-	zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - not enough memory (realloc returned NULL)", MODULE_NAME, __FILE__, __LINE__ );
-	return 0;
+        zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - not enough memory (realloc returned NULL)", 
+                   MODULE_NAME, __FILE__, __LINE__ );
+        return 0;
     }
 
     memcpy(&(mem->memory[mem->size]), contents, realsize);
@@ -78,7 +79,8 @@ void curl_set_opt(const char *fullURL, const char *user, const char *password)
 
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, SSL_VERIFYHOST);
 
-    zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - fullURL: %s (%s:%d)", MODULE_NAME, fullURL, __FILE__, __LINE__ );
+    zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - fullURL: %s (%s:%d)", 
+               MODULE_NAME, fullURL, __FILE__, __LINE__ );
 	
     curl_easy_setopt(curl, CURLOPT_URL, fullURL);
 }
@@ -96,7 +98,8 @@ const char *parse_data(char *data, const char *regex)
     const char *psubStrMatchStr;
     char *dataTmp[] = {data, NULL};
 	
-    zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - regex: '%s' (%s:%d)", MODULE_NAME, regex, __FILE__, __LINE__ );
+    zabbix_log(LOG_LEVEL_DEBUG, "Module: %s - regex: '%s' (%s:%d)", 
+               MODULE_NAME, regex, __FILE__, __LINE__ );
 	
     re = pcre_compile(regex, 
                       PCRE_MULTILINE,
@@ -105,20 +108,22 @@ const char *parse_data(char *data, const char *regex)
                       0);  
     if (re == NULL)
     {
-	zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - could not compile regex: '%s' because %s (%s:%d)", MODULE_NAME, regex, errorStr, __FILE__, __LINE__ );
+        zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - could not compile regex: '%s' because %s (%s:%d)", 
+                   MODULE_NAME, regex, errorStr, __FILE__, __LINE__ );
         exit(-1);
     }
 	
     for(aLineToMatch = dataTmp; *aLineToMatch != NULL; aLineToMatch++)
     {
         pcreExecRet = pcre_exec(re,
-				NULL,
-				*aLineToMatch,
-				strlen(*aLineToMatch),
-				0,
-				0,
-				subStrVec,
-				30);
+                                NULL,
+                                *aLineToMatch,
+                                strlen(*aLineToMatch),
+                                0,
+                                0,
+                                subStrVec,
+                                30);
+
 	pcre_get_substring(*aLineToMatch, subStrVec, pcreExecRet, REGEX_GROUP, &(psubStrMatchStr));
     }
 
@@ -144,8 +149,9 @@ char *get_data()
 	
     if(res != CURLE_OK)
     {
-	zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - curl_easy_perform failed (%s:%d)", MODULE_NAME, curl_easy_strerror(res), __FILE__, __LINE__ );
-	exit(-1);
+        zabbix_log(LOG_LEVEL_DEBUG, "Error in module: %s - curl_easy_perform failed (%s:%d)", 
+                   MODULE_NAME, curl_easy_strerror(res), __FILE__, __LINE__ );
+        exit(-1);
     }
 	
     curl_easy_cleanup(curl);
